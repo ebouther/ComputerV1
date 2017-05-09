@@ -53,9 +53,9 @@ def cleanEqPow(blks):
         for nb in ''.join(blks[i][0]).split("*"):
 
             if (nb.find("X") > -1): # should set degree here.
-                exp += int(nb[2:]);
+                exp += float(nb[2:]);
             else:
-                mult *= int(nb);
+                mult *= float(nb);
         if (mult != 1):
             if (mult == -1):
                 blks[i][1] = '+' if blks[i][1] == '-' else '-';
@@ -100,9 +100,9 @@ def calc(blks):
         res = 0;
         for blk in blocks:
             if blk[1] == '-':
-                res += int(''.join(blk[0])) * -1;
+                res += float(''.join(blk[0])) * -1;
             else:
-                res += int(''.join(blk[0]));
+                res += float(''.join(blk[0]));
         # print("RES : " + str(res) + " | exp : " + str(blocks[0][2]));
         if (blocks[0][2] == 0):
             blks.append(res);

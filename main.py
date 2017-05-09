@@ -40,7 +40,18 @@ def simplifyEq(eq):
     pass;
 
 
-def cleanEqPow(eq):
+def cleanEqPow(blks):
+    for blk in blks:
+        indices = [i for i, x in enumerate(blk[0]) if x == 'X'];
+        for i in indices:
+            if (i + 2 <= len(blk[0])
+                and blk[0][i + 1] == '^'
+                and blk[0][i + 2] == '0'):
+                del blk[0][i+1 : i+3];
+                blk[0][i] = '1';
+        if 'X' not in blk[0]:
+            blk[2] = 0;
+
     pass;
 
 def integersToTheRight(eq):
@@ -56,33 +67,53 @@ def integersToTheRight(eq):
             eq[1][i][1] = '+' if eq[1][i][1] == '-' else '-';
             eq[0].append(eq[1][i]);
             eq[1].pop(i);
-            pass;
 
-def reduceForm(eq):
+def calc(blks):
+    res = 0;
+    for blk in blks:
+        mult = 1;
+        for nb in ''.join(blk[0]).split("*"):
+            mult *= int(nb);
+        if blk[1] == '-':
+            mult *= -1;
+        res += mult;
+    return res;
+
+def printReducedForm(eq):
+    print("Reduced form: ", end='');
+    for i in range(0, len(eq[0])):
+        print(eq[0][i][1] + ' ' + ''.join(eq[0][i][0]), end=' ');
+    for i in range(0, len(eq[1])):
+        print(('+' if eq[1][i][1] == '-' else '-') + ' ' + ''.join(eq[1][i][0]), end=' ');
+    print("= 0");
+    pass;
+
+
+def solveEq(eq):
     if (len(eq) == 2):
         blks = [];
         eq[0] = splitInBlk(list(''.join(eq[0].split())));
         eq[1] = splitInBlk(list(''.join(eq[1].split())));
 
-        cleanEqPow(eq);
+        cleanEqPow(eq[0]);
+        cleanEqPow(eq[1]);
+
         integersToTheRight(eq);
 
         simplifyEq(eq[0]);
         simplifyEq(eq[1]);
 
+        print();
+        printReducedForm(eq);
+
+        print ("\n=======");
         for i in range(0, len(eq[0])):
-            print(eq[0][i]);
-        print("=");
-        for i in range(0, len(eq[1])):
-            print(eq[1][i]);
+            print(eq[0][i], end='');
+        print(" = ", end='');
+        print(calc(eq[1]));
 
         print();
-        print("Reduced form: ", end='');
-        for i in range(0, len(eq[0])):
-            print(eq[0][i][1] + ' ' + ''.join(eq[0][i][0]), end=' ');
-        for i in range(0, len(eq[1])):
-            print(('+' if eq[1][i][1] == '-' else '-') + ' ' + ''.join(eq[1][i][0]), end=' ');
-        print("= 0");
+
 
 
     pass;
@@ -93,7 +124,7 @@ def argsToEq(args):
 
 def main(argv):
     argv.pop(0);
-    reduceForm(argsToEq(argv));
+    solveEq(argsToEq(argv));
     pass;
 
 if __name__ == "__main__":

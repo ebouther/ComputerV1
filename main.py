@@ -14,8 +14,8 @@ def splitInBlk(eq):
                 blk = [[], None, 0];
 
             if (eq[i] != '+' and eq[i] != '-'):
-                if (eq[i] == 'X'):
-                    blk[2] = 1;
+                # if (eq[i] == 'X'):
+                #     blk[2] = 1;
                 blk[0].extend(eq[i]);
                 blk[1] = '+';
             else:
@@ -41,16 +41,39 @@ def simplifyEq(eq):
 
 
 def cleanEqPow(blks):
+
     for blk in blks:
-        indices = [i for i, x in enumerate(blk[0]) if x == 'X'];
-        for i in indices:
-            if (i + 2 <= len(blk[0])
-                and blk[0][i + 1] == '^'
-                and blk[0][i + 2] == '0'):
-                del blk[0][i+1 : i+3];
-                blk[0][i] = '1';
-        if 'X' not in blk[0]:
-            blk[2] = 0;
+        new_arr = [];
+        mult = 1;
+        # print("before : ");
+        # print(blk[0]);
+        exp = 0;
+        for nb in ''.join(blk[0]).split("*"):
+            if (nb.find("X") > -1): # should set degree here.
+                exp += int(nb[2:]);
+            else:
+                mult *= int(nb);
+        if (mult != 1):
+            if (mult == -1):
+                blk[1] = '+' if blk[1] == '-' else '-';
+            else:
+                if (len(new_arr) > 0):
+                    new_arr.extend(['*']);
+                new_arr.extend(str(mult));
+        blk[2] = exp;
+        blk[0] = new_arr;
+        # print(blk);
+
+    # for blk in blks:
+    #     indices = [i for i, x in enumerate(blk[0]) if x == 'X'];
+    #     for i in indices:
+    #         if (i + 2 <= len(blk[0])
+    #             and blk[0][i + 1] == '^'
+    #             and blk[0][i + 2] == '0'):
+    #             del blk[0][i+1 : i+3];
+    #             blk[0][i] = '1';
+    #     if 'X' not in blk[0]:
+    #         blk[2] = 0;
 
     pass;
 
@@ -63,10 +86,11 @@ def integersToTheRight(eq):
             eq[0].pop(i);
     # Unknown to the left
     for i in range(len(eq[1]) - 1, -1, -1):
-        if (eq[1][i][2] == 1):
+        if (eq[1][i][2] > 0):
             eq[1][i][1] = '+' if eq[1][i][1] == '-' else '-';
             eq[0].append(eq[1][i]);
             eq[1].pop(i);
+    pass;
 
 def calc(blks):
     res = 0;
@@ -111,11 +135,7 @@ def solveEq(eq):
             print(eq[0][i], end='');
         print(" = ", end='');
         print(calc(eq[1]));
-
         print();
-
-
-
     pass;
 
 def argsToEq(args):

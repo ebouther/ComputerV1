@@ -70,8 +70,8 @@ def cleanEqPow(blks):
             blks.pop(i);
         else:
             blks[i][2] = exp;
-            # if (exp > 2):
-            #     raise ValueError('Only solve degree 2 or less polynomials');
+            if (exp > 2):
+                raise ValueError('Only solve degree 2 or less polynomials');
             blks[i][0] = new_arr;
     pass;
 
@@ -214,6 +214,10 @@ def solveEq(eq):
             solveAffine(eq);
         elif max_degree == 2:
             solveQuadratic(eq);
+        elif len(eq[0]) == 0 and len(eq[1]) == 0:
+            print("True for all X");
+        else:
+            print("No solution");
     pass;
 
 def argsToEq(args):

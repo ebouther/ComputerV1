@@ -1,5 +1,13 @@
 import sys;
 
+def sqrt(x):
+    last_guess = x / 2.0;
+    while True:
+        guess = (last_guess + x / last_guess) / 2;
+        if abs(guess - last_guess) < .000001:
+            return guess;
+        last_guess= guess;
+
 def splitInBlk(eq):
     blks = [];
     blk = [[], None, 0];
@@ -107,8 +115,51 @@ def printReducedForm(eq):
     pass;
 
 
-def solveAffine(eq):
+def solveQuadratic(eq):
+    a = 0;
+    b = 0;
+    c = eq[1][0] * -1;
 
+    for blk in eq[0]:
+        if blk[1] == 2:
+            a = blk[0];
+        elif blk[1] == 1:
+            b = blk[0];
+
+    print("A = {}".format(a));
+    print("B = {}".format(b));
+    print("C = {}".format(c));
+
+    delta = (b * b) - (4 * a * c);
+    print("delta: ");
+    print(delta);
+
+    if delta > 0:
+        sol1 = ((-b) - sqrt(delta)) / (2 * a);
+        sol2 = ((-b) + sqrt(delta)) / (2 * a);
+        print("X0 = ", end='');
+        print(sol1);
+        print("X1 = ", end='');
+        print(sol2);
+    elif delta == 0:
+        sol1 = (-b) / (2 * a);
+        print("X = ", end='');
+        print(sol1);
+    else:
+        # delta <=> (ir)2
+        print("No real solution.");
+        print("Complex solutions :");
+        #r = (delta * -1) / 2;
+        real = -b / (2 * a);
+        imaginary = sqrt(-delta) / (2 * a);
+        print("sol1 = {} + {}i".format(real, imaginary));
+
+        real = -b / (2 * a);
+        imaginary = -sqrt(-delta) / (2 * a);
+        print("sol2 = {} + {}i".format(real, imaginary));
+    pass;
+
+def solveAffine(eq):
     print("X = ", end='');
     print(eq[1][0] / eq[0][0][0]);
     pass;
@@ -148,8 +199,14 @@ def solveEq(eq):
             print(eq[1][i], end='');
         print();
 
-        if len(eq[0]) == 1 and eq[0][0][1] == 1: # if affine
+        max_degree = 0;
+        for blk in eq[0]:
+            if (max_degree < blk[1]):
+                max_degree = blk[1];
+        if max_degree == 1:
             solveAffine(eq);
+        elif max_degree == 2:
+            solveQuadratic(eq);
     pass;
 
 def argsToEq(args):

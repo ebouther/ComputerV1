@@ -27,32 +27,61 @@ def splitInBlk(eq):
     blks.append(blk);
     return blks;
 
+#Got to improve when 3 * X and X * 3
+#               when 4 * 3 and 3 * 4
+def simplifyEq(eq):
+    for elem in eq:
+        # pass value instead of reference
+        inverse_elem = elem[:];
+        inverse_elem[1] = '+' if inverse_elem[1] == '-' else '-';
+        if inverse_elem in eq:
+            eq.pop(eq.index(inverse_elem));
+            eq.pop(eq.index(elem));
+    pass;
+
+
+def cleanEqPow(eq):
+    pass;
+
+def integersToTheRight(eq):
+    #iterate backward enables to pop elements while looping
+    for i in range(len(eq[0]) - 1, -1, -1):
+        if (eq[0][i][2] == 0):
+            eq[0][i][1] = '+' if eq[0][i][1] == '-' else '-';
+            eq[1].append(eq[0][i]);
+            eq[0].pop(i);
+    # Unknown to the left
+    for i in range(len(eq[1]) - 1, -1, -1):
+        if (eq[1][i][2] == 1):
+            eq[1][i][1] = '+' if eq[1][i][1] == '-' else '-';
+            eq[0].append(eq[1][i]);
+            eq[1].pop(i);
+            pass;
 
 def reduceForm(eq):
     if (len(eq) == 2):
         blks = [];
-        left_part = splitInBlk(list(''.join(eq[0].split())));
-        right_part = splitInBlk(list(''.join(eq[1].split())));
+        eq[0] = splitInBlk(list(''.join(eq[0].split())));
+        eq[1] = splitInBlk(list(''.join(eq[1].split())));
 
-        # inverse right part
-        for i in range(0, len(right_part)):
-            right_part[i][1] = '+' if right_part[i][1] == '-' else '-';
-        left_part.extend(right_part);
-        for i in range(0, len(left_part)):
-            print(left_part[i]);
+        cleanEqPow(eq);
+        integersToTheRight(eq);
 
-        # Simplify equation
-        for elem in left_part:
-            # pass value instead of reference
-            inverse_elem = elem[:];
-            inverse_elem[1] = '+' if inverse_elem[1] == '-' else '-';
-            if inverse_elem in left_part:
-                left_part.pop(left_part.index(inverse_elem));
-                left_part.pop(left_part.index(elem));
+        simplifyEq(eq[0]);
+        simplifyEq(eq[1]);
+
+        for i in range(0, len(eq[0])):
+            print(eq[0][i]);
+        print("=");
+        for i in range(0, len(eq[1])):
+            print(eq[1][i]);
+
         print();
         print("Reduced form: ", end='');
-        for i in range(0, len(left_part)):
-            print(left_part[i][1] + ' ' + ''.join(left_part[i][0]), end=' ');
+        for i in range(0, len(eq[0])):
+            print(eq[0][i][1] + ' ' + ''.join(eq[0][i][0]), end=' ');
+        for i in range(0, len(eq[1])):
+            print(('+' if eq[1][i][1] == '-' else '-') + ' ' + ''.join(eq[1][i][0]), end=' ');
         print("= 0");
 
 

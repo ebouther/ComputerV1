@@ -46,28 +46,33 @@ def simplifyEq(eq):
 
 def cleanEqPow(blks):
 
-    for blk in blks:
+    for i in range(len(blks) - 1, -1, -1):
         new_arr = [];
         mult = 1;
         exp = 0;
-        for nb in ''.join(blk[0]).split("*"):
+        for nb in ''.join(blks[i][0]).split("*"):
+
             if (nb.find("X") > -1): # should set degree here.
                 exp += int(nb[2:]);
             else:
                 mult *= int(nb);
         if (mult != 1):
             if (mult == -1):
-                blk[1] = '+' if blk[1] == '-' else '-';
+                blks[i][1] = '+' if blks[i][1] == '-' else '-';
             else:
                 if (len(new_arr) > 0):
                     new_arr.extend(['*']);
                 new_arr.extend(str(mult));
         if len(new_arr) == 0:
             new_arr.extend('1');
-        blk[2] = exp;
-        if (exp > 2):
-            raise ValueError('Only solve degree 2 or less polynomials');
-        blk[0] = new_arr;
+        if (mult == 0):
+            print("POP I : {}".format(blks[i]));
+            blks.pop(i);
+        else:
+            blks[i][2] = exp;
+            # if (exp > 2):
+            #     raise ValueError('Only solve degree 2 or less polynomials');
+            blks[i][0] = new_arr;
     pass;
 
 def integersToTheRight(eq):
@@ -98,7 +103,7 @@ def calc(blks):
                 res += int(''.join(blk[0])) * -1;
             else:
                 res += int(''.join(blk[0]));
-        print("RES : " + str(res) + " | exp : " + str(blocks[0][2]));
+        # print("RES : " + str(res) + " | exp : " + str(blocks[0][2]));
         if (blocks[0][2] == 0):
             blks.append(res);
         else:
@@ -109,6 +114,8 @@ def printReducedForm(eq):
     print("Reduced form: ", end='');
     for i in range(0, len(eq[0])):
         print(eq[0][i][1] + ' ' + ''.join(eq[0][i][0]), end=' ');
+        if eq[0][i][2] > 0:
+            print(" * X^{}".format(eq[0][i][2]), end=' ');
     for i in range(0, len(eq[1])):
         print(('+' if eq[1][i][1] == '-' else '-') + ' ' + ''.join(eq[1][i][0]), end=' ');
     print("= 0");
@@ -149,7 +156,7 @@ def solveQuadratic(eq):
         # delta <=> (ir)2
         print("No real solution.");
         print("Complex solutions :");
-        #r = (delta * -1) / 2;
+
         real = -b / (2 * a);
         imaginary = sqrt(-delta) / (2 * a);
         print("sol1 = {} + {}i".format(real, imaginary));

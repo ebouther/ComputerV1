@@ -14,15 +14,11 @@ def splitInBlk(eq):
                 blk = [[], None, 0];
 
             if (eq[i] != '+' and eq[i] != '-'):
-                # if (eq[i] == 'X'):
-                #     blk[2] = 1;
                 blk[0].extend(eq[i]);
                 blk[1] = '+';
             else:
                 blk[1] = eq[i];
         else:
-            if (eq[i] == 'X'):
-                blk[2] = 1;
             blk[0].extend(eq[i]);
     blks.append(blk);
     return blks;
@@ -60,6 +56,8 @@ def cleanEqPow(blks):
                 if (len(new_arr) > 0):
                     new_arr.extend(['*']);
                 new_arr.extend(str(mult));
+        if len(new_arr) == 0:
+            new_arr.extend('1');
         blk[2] = exp;
         blk[0] = new_arr;
         # print(blk);

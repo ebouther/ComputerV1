@@ -2,43 +2,58 @@ import sys;
 
 def splitInBlk(eq):
     blks = [];
-    blk = [[], None, None];
+    blk = [[], None, 0];
 
     for i in range(0, len(eq)):
-        #print("I :" + str(i) + " | " + str(eq[i]));
         if (eq[i] == '+'
                 or eq[i] == '-'
                 or i == 0):
 
             if (i != 0):
-                #print("APPEND")
                 blks.append(blk);
-                blk = [[], None, None];
+                blk = [[], None, 0];
 
             if (eq[i] != '+' and eq[i] != '-'):
+                if (eq[i] == 'X'):
+                    blk[2] = 1;
                 blk[0].extend(eq[i]);
-                #print("ADD : " + str(eq[i]));
                 blk[1] = '+';
             else:
                 blk[1] = eq[i];
-                #print("BLK[1] : " + blk[1]);
         else:
-            #print("ELSE");
+            if (eq[i] == 'X'):
+                blk[2] = 1;
             blk[0].extend(eq[i]);
     blks.append(blk);
     return blks;
 
+
 def reduceForm(eq):
     if (len(eq) == 2):
-        blks = [[], []];
-        blks[0] = splitInBlk(eq[0].split());
-        for i in range(0, len(blks[0])):
-            print(blks[0][i]);
-        print("---------");
-        blks[1] = splitInBlk(eq[1].split());
-        for i in range(0, len(blks[1])):
-            print(blks[1][i]);
+        blks = [];
+        left_part = splitInBlk(list(''.join(eq[0].split())));
+        right_part = splitInBlk(list(''.join(eq[1].split())));
 
+        # inverse right part
+        for i in range(0, len(right_part)):
+            right_part[i][1] = '+' if right_part[i][1] == '-' else '-';
+        left_part.extend(right_part);
+        for i in range(0, len(left_part)):
+            print(left_part[i]);
+
+        # Simplify equation
+        for elem in left_part:
+            # pass value instead of reference
+            inverse_elem = elem[:];
+            inverse_elem[1] = '+' if inverse_elem[1] == '-' else '-';
+            if inverse_elem in left_part:
+                left_part.pop(left_part.index(inverse_elem));
+                left_part.pop(left_part.index(elem));
+        print();
+        print("Reduced form: ", end='');
+        for i in range(0, len(left_part)):
+            print(left_part[i][1] + ' ' + ''.join(left_part[i][0]), end=' ');
+        print("= 0");
 
 
     pass;

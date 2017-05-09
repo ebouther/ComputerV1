@@ -64,17 +64,6 @@ def cleanEqPow(blks):
         blk[0] = new_arr;
         # print(blk);
 
-    # for blk in blks:
-    #     indices = [i for i, x in enumerate(blk[0]) if x == 'X'];
-    #     for i in indices:
-    #         if (i + 2 <= len(blk[0])
-    #             and blk[0][i + 1] == '^'
-    #             and blk[0][i + 2] == '0'):
-    #             del blk[0][i+1 : i+3];
-    #             blk[0][i] = '1';
-    #     if 'X' not in blk[0]:
-    #         blk[2] = 0;
-
     pass;
 
 def integersToTheRight(eq):
@@ -93,15 +82,24 @@ def integersToTheRight(eq):
     pass;
 
 def calc(blks):
-    res = 0;
-    for blk in blks:
-        mult = 1;
-        for nb in ''.join(blk[0]).split("*"):
-            mult *= int(nb);
-        if blk[1] == '-':
-            mult *= -1;
-        res += mult;
-    return res;
+
+    values = set(map(lambda x:x[2], blks));
+    sortByDegree = [[y[:] for y in blks if y[2]==x] for x in values];
+
+    blks = [];
+    for blocks in sortByDegree:
+        res = 0;
+        for blk in blocks:
+            if blk[1] == '-':
+                res += int(''.join(blk[0])) * -1;
+            else:
+                res += int(''.join(blk[0]));
+        print("RES : " + str(res) + " | exp : " + str(blocks[0][2]));
+        if (blocks[0][2] == 0):
+            blks.append(res);
+        else:
+            blks.append([res, blocks[0][2]]);
+    return blks;
 
 def printReducedForm(eq):
     print("Reduced form: ", end='');
@@ -134,7 +132,19 @@ def solveEq(eq):
         for i in range(0, len(eq[0])):
             print(eq[0][i], end='');
         print(" = ", end='');
-        print(calc(eq[1]));
+        for i in range(0, len(eq[1])):
+            print(eq[1][i], end='');
+
+        eq[0] = calc(eq[0]);
+        eq[1] = calc(eq[1]);
+
+        print ("\n=======");
+        for i in range(0, len(eq[0])):
+            print(eq[0][i], end='');
+        print(" = ", end='');
+        for i in range(0, len(eq[1])):
+            print(eq[1][i], end='');
+
         print();
     pass;
 

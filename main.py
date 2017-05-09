@@ -41,8 +41,6 @@ def cleanEqPow(blks):
     for blk in blks:
         new_arr = [];
         mult = 1;
-        # print("before : ");
-        # print(blk[0]);
         exp = 0;
         for nb in ''.join(blk[0]).split("*"):
             if (nb.find("X") > -1): # should set degree here.
@@ -59,9 +57,9 @@ def cleanEqPow(blks):
         if len(new_arr) == 0:
             new_arr.extend('1');
         blk[2] = exp;
+        if (exp > 2):
+            raise ValueError('Only solve degree 2 or less polynomials');
         blk[0] = new_arr;
-        # print(blk);
-
     pass;
 
 def integersToTheRight(eq):
@@ -109,6 +107,12 @@ def printReducedForm(eq):
     pass;
 
 
+def solveAffine(eq):
+
+    print("X = ", end='');
+    print(eq[1][0] / eq[0][0][0]);
+    pass;
+
 def solveEq(eq):
     if (len(eq) == 2):
         blks = [];
@@ -142,8 +146,10 @@ def solveEq(eq):
         print(" = ", end='');
         for i in range(0, len(eq[1])):
             print(eq[1][i], end='');
-
         print();
+
+        if len(eq[0]) == 1 and eq[0][0][1] == 1: # if affine
+            solveAffine(eq);
     pass;
 
 def argsToEq(args):

@@ -117,6 +117,8 @@ def calc(blks):
 def printEq(eq):
     print("\033[36m\t       => ", end='');
     for i in range(0, len(eq[0])):
+        if (i != 0 and eq[0][i][0] >= 0):
+            print("+", end=' ');
         print(eq[0][i][0], end=' ');
         if eq[0][i][1] > 0:
             print("* X^{}".format(eq[0][i][1]), end=' ');

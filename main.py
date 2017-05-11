@@ -183,11 +183,20 @@ def solveQuadratic(eq):
         print("No real solution.");
         print("2 complex solutions :");
 
+        print("R X0 = -b / 2a");
+        print("R X0 = -({}) / (2 * ({}))".format(b, a));
+        print("I X0 = sqrt(-𝚫) / 2a)".format(delta, a));
+        print("I X0 = sqrt(-({})) / (2 * ({}))\n".format(delta, a));
+
+        print("R X1 = -b / 2a");
+        print("R X1 = -({}) / (2 * ({}))".format(b, a));
+        print("I X1 = -sqrt(-𝚫) / 2a)".format(delta, a));
+        print("I X1 = -sqrt(-({})) / (2 * ({}))\n".format(delta, a));
+
         real = -b / (2 * a);
         imaginary = sqrt(-delta) / (2 * a);
         print("\t\033[32mX0 = {:.5f} + {:.5f}i".format(real, imaginary));
 
-        real = -b / (2 * a);
         imaginary = -sqrt(-delta) / (2 * a);
         print("\tX1 = {:.5f} + {:.5f}i\033[0m".format(real, imaginary));
     pass;

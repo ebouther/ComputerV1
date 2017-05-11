@@ -37,8 +37,6 @@ def splitInBlk(eq):
     blks.append(blk);
     return blks;
 
-#Got to improve when 3 * X and X * 3
-#               when 4 * 3 and 3 * 4
 def simplifyEq(eq):
     for elem in eq:
         # pass value instead of reference
@@ -56,9 +54,11 @@ def cleanEqPow(blks):
         mult = 1;
         exp = 0;
         for nb in ''.join(blks[i][0]).split("*"):
-
             if (nb.find("X") > -1):
-                exp += float(nb[2:]);
+                if (len(nb) == 1):
+                    exp += 1.0;
+                else:
+                    exp += float(nb[2:]);
             else:
                 mult *= float(nb);
         if (mult != 1):
@@ -193,7 +193,7 @@ def solveQuadratic(eq):
     pass;
 
 def solveAffine(eq):
-    print("\033[32mX = {:.5f}\033[0m".format(eq[1][0] / eq[0][0][0]));
+    print("\033[32m\tX = {:.5f}\033[0m".format(eq[1][0] / eq[0][0][0]));
     pass;
 
 def solveEq(eq):

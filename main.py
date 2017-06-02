@@ -246,7 +246,7 @@ def solveEq(eq):
 
 def main(argv):
     if (argv[1]):
-        reg=re.compile('^[0-9 X\+\-\=\^\*\t\n]+$');
+        reg=re.compile('^[0-9 X\+\-\.\=\^\*\t\n]+$');
         if (reg.match(argv[1])):
             try:
                 solveEq(argv[1].split('='));

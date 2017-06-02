@@ -2,6 +2,11 @@ import sys;
 import os;
 import re;
 
+
+# blk = ["3 * 4", '+', 0]
+# blk = ["3 * X * 4", '+', 1]
+# blk = ["3 * X^2 * 4", '+', 2]
+
 def my_abs(x):
     return x if x >= 0 else -x;
 
@@ -137,6 +142,8 @@ def printReducedForm(eq):
             print("* X^{}".format(eq[0][i][2]), end=' ');
     for i in range(0, len(eq[1])):
         print(('+' if eq[1][i][1] == '-' else '-') + ' ' + ''.join(eq[1][i][0]), end=' ');
+    if not (len(eq[0])):
+        print("0 ", end = '');
     print("= 0\033[0m\n");
     pass;
 
@@ -226,7 +233,10 @@ def solveEq(eq):
         eq[0] = calc(eq[0]);
         eq[1] = calc(eq[1]);
 
-        printEq(eq);
+        if not (len(eq[1])):
+           eq[1] = [0, 0]
+        if (len(eq[0])):
+            printEq(eq);
 
         max_degree = 0;
         for blk in eq[0]:

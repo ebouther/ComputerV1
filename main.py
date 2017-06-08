@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    main.py                                            :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: ebouther <marvin@42.fr>                    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2017/06/08 19:56:22 by ebouther          #+#    #+#              #
+#    Updated: 2017/06/08 20:13:20 by ebouther         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 import sys;
 import os;
 import re;
@@ -24,8 +36,7 @@ def splitInBlk(eq):
     blk = [[], None, 0];
 
     for i in range(0, len(eq)):
-        if (eq[i] == '+'
-                or eq[i] == '-'
+        if (((eq[i] == '+' or eq[i] == '-') and eq[i-1] != '^')
                 or i == 0):
 
             if (i != 0):
@@ -80,22 +91,38 @@ def cleanEqPow(blks):
         else:
             blks[i][2] = exp;
             if (exp > 2):
-                print('Only solves degree 2 or less polynomials');
+                print("\033[31mPolynomial degree: {}\033[0m\n".format(exp));
+                print('Only solves degree 2 or less polynomials\n');
                 os._exit(1)
             blks[i][0] = new_arr;
     pass;
 
+# Return neg as long as X with negative exp are found.
+def negative_pow(eq):
+    neg = 0;
+    for i in range(len(eq[0])):
+        if (eq[0][i][1] < 0):
+            neg = 1;
+            deg = eq[0][i][1] * -1;
+            eq[0][i][1] = 0;
+            for n in range(len(eq[0])):
+                if (n != i):
+                    eq[0][n][1] += deg;
+            for n in range(len(eq[1])):
+                eq[1][n][1] += deg;
+    return neg;
+
 def integersToTheRight(eq):
     #iterate backward enables to pop elements while looping
     for i in range(len(eq[0]) - 1, -1, -1):
-        if (eq[0][i][2] == 0):
-            eq[0][i][1] = '+' if eq[0][i][1] == '-' else '-';
+        if (eq[0][i][1] == 0):
+            eq[0][i][0] *= -1;
             eq[1].append(eq[0][i]);
             eq[0].pop(i);
     # Unknown to the left
     for i in range(len(eq[1]) - 1, -1, -1):
-        if (eq[1][i][2] > 0):
-            eq[1][i][1] = '+' if eq[1][i][1] == '-' else '-';
+        if (eq[1][i][1] != 0):
+            eq[1][i][0] *= -1;
             eq[0].append(eq[1][i]);
             eq[1].pop(i);
     pass;
@@ -113,10 +140,10 @@ def calc(blks):
                 res += float(''.join(blk[0])) * -1;
             else:
                 res += float(''.join(blk[0]));
-        if (blocks[0][2] == 0):
-            blks.append(res);
-        else:
-            blks.append([res, blocks[0][2]]);
+        #if (blocks[0][2] == 0):
+        #    blks.append(res);
+        #else:
+        blks.append([res, blocks[0][2]]);
     return blks;
 
 def printEq(eq):
@@ -125,33 +152,34 @@ def printEq(eq):
         if (i != 0 and eq[0][i][0] >= 0):
             print("+", end=' ');
         print(eq[0][i][0], end=' ');
-        if eq[0][i][1] > 0:
+        if eq[0][i][1] != 0:
             print("* X^{}".format(eq[0][i][1]), end=' ');
     print(" = ", end="");
-    for i in range(0, len(eq[1])):
-        print(eq[1][i], end=' ');
+    print(eq[1][0][0], end=' ');
     print("\033[0m\n");
     pass;
 
 def printReducedForm(eq):
     print("\n\033[36mReduced form: ", end='');
     for i in range(0, len(eq[0])):
-
         print((eq[0][i][1] if not (i == 0 and eq[0][i][1] == '+') else '') + ' ' + ''.join(eq[0][i][0]), end=' ');
-        if eq[0][i][2] > 0:
+        if eq[0][i][2] != 0:
             print("* X^{}".format(eq[0][i][2]), end=' ');
     for i in range(0, len(eq[1])):
         print(('+' if eq[1][i][1] == '-' else '-') + ' ' + ''.join(eq[1][i][0]), end=' ');
-    if not (len(eq[0])):
+    if (len(eq[0]) == 0 and len(eq[1]) == 0):
         print("0 ", end = '');
     print("= 0\033[0m\n");
     pass;
 
 
 def solveQuadratic(eq):
+
+    print("\033[31mPolynomial degree: 2\033[0m\n");
+
     a = 0;
     b = 0;
-    c = eq[1][0] * -1;
+    c = eq[1][0][0] * -1;
 
     for blk in eq[0]:
         if blk[1] == 2:
@@ -211,7 +239,12 @@ def solveQuadratic(eq):
     pass;
 
 def solveAffine(eq):
-    print("\033[32m\tX = {:.5f}\033[0m".format(eq[1][0] / eq[0][0][0]));
+    print("\033[31mPolynomial degree: 1\033[0m\n");
+    if (eq[0][0][0] < 0 and eq[1][0][0] < 0):
+        print("\033[32m\tX = {} / {}\033[0m".format(-eq[1][0][0], -eq[0][0][0]));
+    else:
+        print("\033[32m\tX = {} / {}\033[0m".format(eq[1][0][0], eq[0][0][0]));
+    print("\033[32m\tX = {:.5f}\033[0m".format(eq[1][0][0] / eq[0][0][0]));
     pass;
 
 def solveEq(eq):
@@ -220,21 +253,30 @@ def solveEq(eq):
         eq[0] = splitInBlk(list(''.join(eq[0].split())));
         eq[1] = splitInBlk(list(''.join(eq[1].split())));
 
+
+        print ("EQ : {}".format(eq));
+
         cleanEqPow(eq[0]);
         cleanEqPow(eq[1]);
 
-        integersToTheRight(eq);
+        print ("EQ : {}".format(eq));
 
         simplifyEq(eq[0]);
         simplifyEq(eq[1]);
 
+        print ("EQ : {}".format(eq));
         printReducedForm(eq);
 
         eq[0] = calc(eq[0]);
         eq[1] = calc(eq[1]);
 
+        ret = 1;
+        while (ret):
+            ret = negative_pow(eq);
+            integersToTheRight(eq);
+
         if not (len(eq[1])):
-           eq[1] = [0, 0]
+           eq[1] = [0, 0];
         if (len(eq[0])):
             printEq(eq);
 
@@ -246,6 +288,9 @@ def solveEq(eq):
             solveAffine(eq);
         elif max_degree == 2:
             solveQuadratic(eq);
+        elif max_degree > 2:
+            print("\033[31mPolynomial degree: {}\033[0m\n".format(max_degree));
+            print('Only solves degree 2 or less polynomials\n');
         elif len(eq[0]) == 0 and len(eq[1]) == 0:
             print("True for all X");
         else:
@@ -255,7 +300,7 @@ def solveEq(eq):
     pass;
 
 def main(argv):
-    if (argv[1]):
+    if (len(argv) == 2):
         reg=re.compile('^[0-9 X\+\-\.\=\^\*\t\n]+$');
         if (reg.match(argv[1])):
             try:

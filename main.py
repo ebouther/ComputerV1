@@ -6,7 +6,7 @@
 #    By: ebouther <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/06/08 19:56:22 by ebouther          #+#    #+#              #
-#    Updated: 2017/06/08 20:13:20 by ebouther         ###   ########.fr        #
+#    Updated: 2017/06/21 14:42:00 by ebouther         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -127,8 +127,9 @@ def integersToTheRight(eq):
             eq[1].pop(i);
     pass;
 
+# Merge blocks with same degree and change replace strings with float.
+# Ex: [["5.0", '+', 1.0] ["7.0", '-', 1.0]] => [[-2.0, 1.0]]
 def calc(blks):
-
     values = set(map(lambda x:x[2], blks));
     sortByDegree = [[y[:] for y in blks if y[2]==x] for x in values];
 
@@ -140,11 +141,24 @@ def calc(blks):
                 res += float(''.join(blk[0])) * -1;
             else:
                 res += float(''.join(blk[0]));
-        #if (blocks[0][2] == 0):
-        #    blks.append(res);
-        #else:
-        blks.append([res, blocks[0][2]]);
+        if (res != 0):
+            blks.append([res, blocks[0][2]]);
     return blks;
+
+# does the same as calc() after the blocks were epured (case of X with negative exponent)
+def recalc(blks):
+    values = set(map(lambda x:x[1], blks));
+    sortByDegree = [[y[:] for y in blks if y[1]==x] for x in values];
+
+    blks = [];
+    for blocks in sortByDegree:
+        res = 0;
+        for blk in blocks:
+            res += blk[0];
+        if (res != 0):
+            blks.append([res, blocks[0][1]]);
+    return blks;
+
 
 def printEq(eq):
     print("\033[36m\t       => ", end='');
@@ -253,27 +267,32 @@ def solveEq(eq):
         eq[0] = splitInBlk(list(''.join(eq[0].split())));
         eq[1] = splitInBlk(list(''.join(eq[1].split())));
 
-
-        print ("EQ : {}".format(eq));
+        #print ("EQ : {}".format(eq));
 
         cleanEqPow(eq[0]);
         cleanEqPow(eq[1]);
 
-        print ("EQ : {}".format(eq));
+        #print ("EQ : {}".format(eq));
 
         simplifyEq(eq[0]);
         simplifyEq(eq[1]);
 
-        print ("EQ : {}".format(eq));
+        #print ("EQ : {}".format(eq));
         printReducedForm(eq);
 
         eq[0] = calc(eq[0]);
         eq[1] = calc(eq[1]);
 
+        #print ("EQ : {}".format(eq));
+
         ret = 1;
         while (ret):
             ret = negative_pow(eq);
             integersToTheRight(eq);
+            eq[0] = recalc(eq[0]);
+            eq[1] = recalc(eq[1]);
+
+        #print ("EQ : {}".format(eq));
 
         if not (len(eq[1])):
            eq[1] = [0, 0];

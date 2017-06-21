@@ -6,7 +6,7 @@
 #    By: ebouther <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/06/08 19:56:22 by ebouther          #+#    #+#              #
-#    Updated: 2017/06/21 14:42:00 by ebouther         ###   ########.fr        #
+#    Updated: 2017/06/21 16:24:46 by ebouther         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -169,7 +169,7 @@ def printEq(eq):
         if eq[0][i][1] != 0:
             print("* X^{}".format(eq[0][i][1]), end=' ');
     print(" = ", end="");
-    print(eq[1][0][0], end=' ');
+    print(str(eq[1][0][0]), end=' ');
     print("\033[0m\n");
     pass;
 
@@ -295,7 +295,7 @@ def solveEq(eq):
         #print ("EQ : {}".format(eq));
 
         if not (len(eq[1])):
-           eq[1] = [0, 0];
+           eq[1] = [[0, 0]];
         if (len(eq[0])):
             printEq(eq);
 
@@ -322,11 +322,11 @@ def main(argv):
     if (len(argv) == 2):
         reg=re.compile('^[0-9 X\+\-\.\=\^\*\t\n]+$');
         if (reg.match(argv[1])):
-            try:
-                solveEq(argv[1].split('='));
-            except:
-                print("Bad input.");
-                os._exit(1);
+            #try:
+            solveEq(argv[1].split('='));
+            #except:
+            #    print("Bad input.");
+            #    os._exit(1);
         else:
             print("Bad input.")
     else:

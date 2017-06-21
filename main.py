@@ -6,7 +6,7 @@
 #    By: ebouther <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/06/08 19:56:22 by ebouther          #+#    #+#              #
-#    Updated: 2017/06/21 16:24:46 by ebouther         ###   ########.fr        #
+#    Updated: 2017/06/21 16:26:32 by ebouther         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -322,11 +322,11 @@ def main(argv):
     if (len(argv) == 2):
         reg=re.compile('^[0-9 X\+\-\.\=\^\*\t\n]+$');
         if (reg.match(argv[1])):
-            #try:
-            solveEq(argv[1].split('='));
-            #except:
-            #    print("Bad input.");
-            #    os._exit(1);
+            try:
+               solveEq(argv[1].split('='));
+            except:
+                print("Bad input.");
+                os._exit(1);
         else:
             print("Bad input.")
     else:
